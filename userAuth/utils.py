@@ -1,8 +1,8 @@
 import re
 
-usernameReg=r'[A-Za-z0-9]{3,}'
-passwordReg=r'[A-Za-z0-9]{4,}'
-emailReg=r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
+usernameReg=r'\w{3,}'
+passwordReg=r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,18}$'
+emailReg=r'^([a-zA-Z0-9_.+-])+@([a-zA-Z0-9-]+)\.([a-z]+)$'
 
 def validUsername(username):
     return re.match(usernameReg,username)

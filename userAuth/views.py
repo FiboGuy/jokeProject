@@ -76,11 +76,16 @@ class LoginView(ListView):
 class LoggedInView(ListView):
     def get(self,request):
         user = request.user
+        if(user.profile.image):
+            image=user.profile.image.url
+        else:
+            image=None
         return JsonResponse({
             'username':user.username,
             'email':user.email,
             'first_name':user.first_name,
-            'last_name':user.last_name
+            'last_name':user.last_name,
+            'image':image
         })
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -95,3 +100,4 @@ class EditProfileView(ListView):
     def put(self, request):
         #edit user profile
         return JsonResponse({"ok":"ok"})
+

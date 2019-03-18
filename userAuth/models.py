@@ -19,7 +19,7 @@ def validate_image(value):
 
 class Profile(models.Model):
     user=models.OneToOneField(User, on_delete=models.CASCADE)
-    image=models.ImageField(upload_to=user_directory_path, validators=[validate_image])
+    image=models.ImageField(upload_to=user_directory_path, validators=[validate_image], default=None)
     # active boolean field for email activation account.
 
     def __str__(self):
