@@ -3,14 +3,16 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import os
 # Create your models here.
+
 
 
 def user_directory_path(instance, filename):
     return 'user_{0}/{1}'.format(instance.user.username, filename)
 
 def validate_image(value):
-    filesize= value.size
+    filesize = value.size
     if filesize > 1048576:
         raise ValidationError("The maximum file size that can be uploaded is 1MB")
     else:
@@ -25,7 +27,6 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-    
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
