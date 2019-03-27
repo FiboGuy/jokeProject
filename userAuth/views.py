@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.views.generic import ListView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import login, logout
 from django.core.files import File
@@ -10,21 +10,19 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .utils import validPassword, validUsername, validEmail, deleteUserImages
 from emailService.emails.welcomeEmail import welcomEmail
-import json
 
 
 @method_decorator(csrf_exempt, name="dispatch")
 class RegisterView(ListView):
     def post(self, request):
         try:
-            data = json.loads(request.body)
-            username = data['username']
-            password = data['password']
-            password = data['password2']
-            email = data['email']
+            username = request.POST['username']
+            password = request.POST['password']
+            password2 = request.POST['password2']
+            email = request.POST['email']
         except Exception as err:
             raise Exception(err)
-
+    
         try:
             user = User.objects.get(username=username)
         except Exception:
@@ -34,18 +32,19 @@ class RegisterView(ListView):
             return JsonResponse({'data':'username already taken'}, status=400)
 
         try:
-            user = User.objects.get(email=data["email"])
+            user = User.objects.get(email=email)
         except Exception:
             user = None
         
         if(user is not None):
             return JsonResponse({'data':'email already registered'}, status=400)
     
-        if(validUsername(data['username']) and validPassword(data['password']) and data['password']==data['password2'] and validEmail(data['email'])):
+        if(validUsername(username) and validPassword(password) and password==password2 and validEmail(email)):
             try:
                 welcomEmail(email,{'username':username})
             except Exception:
                 pass
+
             user = User.objects.create_user(username=username, password=password, email=email)
         else:
             return JsonResponse({'data':'invalid credentials'}, status=400)
@@ -57,10 +56,9 @@ class RegisterView(ListView):
 @method_decorator(csrf_exempt, name="dispatch")
 class LoginView(ListView):
     def post(self,request):
-        data = json.loads(request.body)
         try:
-            username=data['username']
-            password=data['password']
+            username=request.POST['username']
+            password=request.POST['password']
         except Exception as err:
             raise Exception('{} is missing'.format(err))
         
@@ -106,11 +104,10 @@ decorators=[csrf_exempt, login_required]
 class EditProfileView(ListView):
     def put(self, request):
         try:
-            data=json.loads(request.body)
-            username = data['username']
-            email = data['email']
-            first_name= data['first_name']
-            last_name= data['last_name']
+            username = request.POST['username']
+            email = request.POST['email']
+            first_name= request.POST['first_name']
+            last_name= request.POST['last_name']
         except Exception as err:
             raise Exception(err)
 
@@ -130,7 +127,7 @@ class EditProfileView(ListView):
         if(user is not None and user.email != request.user.email):
             raise Exception("email already in database")
 
-        if(validUsername(data['username']) and validEmail(data['email'])):
+        if(validUsername(username) and validEmail(email)):
             user = request.user
             user.username = username
             user.email = email
@@ -149,10 +146,9 @@ decorators=[csrf_exempt, login_required]
 class EditPassword(ListView):
     def post(self, request):
         try:
-            data=json.loads(request.body)
-            password = data['password']
-            password1 = data['password1']
-            password2 = data['password2']
+            password = request.POST['password']
+            password1 = request.POST['password1']
+            password2 = request.POST['password2']
         except Exception:
             raise Exception('missing credentials')
 
@@ -189,7 +185,7 @@ class UploadImage(ListView):
     
     def delete(self, request):
         profile = Profile.objects.get(user=request.user)
-        profile.image = None
+        profile.image = 'default/profile.png'
         profile.save()
 
         deleteUserImages(request.user.username)
