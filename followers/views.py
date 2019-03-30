@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Followers
 
-
 # decorators=[login_required, csrf_exempt]
 @method_decorator(csrf_exempt, name='dispatch')
 class followView(ListView):
