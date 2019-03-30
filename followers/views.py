@@ -40,8 +40,3 @@ class followView(ListView):
         users = Followers.objects.filter(followed=id)
         data = [i.follower.username for i in users]
         return JsonResponse({'data':data})
-
-
-class Test(ListView):
-    def get(self,request):
-        return render(request,'emailService/welcomeTemplate.html', {'username':'bum'})

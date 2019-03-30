@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'userAuth',
     'followers',
-    'emailService'
+    'emailService',
+    'jokes'
 ]
 
 MIDDLEWARE = [
