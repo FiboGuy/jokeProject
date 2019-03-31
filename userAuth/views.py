@@ -86,6 +86,7 @@ class LoggedInView(ListView):
         else:
             image=None
         return JsonResponse({
+            'id':user.id,
             'username':user.username,
             'email':user.email,
             'first_name':user.first_name,
