@@ -5,5 +5,7 @@ urlpatterns = [
     path('new', views.JokeCreateView.as_view(), name='new_joke'),
     path('joke/<int:id>', views.JokeView.as_view(), name='joke'),
     path('jokes/<int:id>', views.JokesUserView.as_view(), name='jokes_user'),
-    path('rate', views.RateJokeView.as_view(), name='joke_rate')
+    path('rate', views.RateJokeView.as_view(), name='joke_rate'),
+    path('favourite', views.FavouriteJokeView.as_view(),name='joke_favourite'),
+    path('favourite/<int:id>', views.FavouriteJokeView.as_view(),name='joke_favourite_id')
 ]

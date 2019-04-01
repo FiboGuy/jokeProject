@@ -10,6 +10,11 @@ from .models import Followers
 # decorators=[login_required, csrf_exempt]
 @method_decorator(csrf_exempt, name='dispatch')
 class followView(ListView):
+    def get(self,request, id):
+        users = Followers.objects.filter(followed=id)
+        data = [i.follower.username for i in users]
+        return JsonResponse({'data':data})
+
     @method_decorator(login_required,name='dispatch')
     def post(self,request):
         user = request.user
@@ -31,11 +36,20 @@ class followView(ListView):
         if len(check)==0:
             follow = Followers(follower=user, followed=followedUser)
             follow.save()
-            return JsonResponse({'data':'ok'}, status=200)
+            return JsonResponse({'data':'Followed succesfully'}, status=200)
         else:
             return JsonResponse({'data':'Already following'}, status=400)
+    
+    @method_decorator(login_required,name='dispatch')
+    def delete(self,request,id):
+        user = request.user
+        check = Followers.objects.filter(follower=user.id, followed=id)
+
+        if len(check)==0:
+            data = {'data':'You are not following this user'}
+        else:
+            check[0].delete()
+            data = {'data':'You stopped following this user'}
         
-    def get(self,request, id):
-        users = Followers.objects.filter(followed=id)
-        data = [i.follower.username for i in users]
-        return JsonResponse({'data':data})
+        return JsonResponse(data,status=200)
+        
