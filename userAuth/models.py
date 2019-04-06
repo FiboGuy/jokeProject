@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import os
+from emailService.emails.welcomeEmail import welcomEmail
+
 # Create your models here.
 
 def user_directory_path(instance, filename):
@@ -34,6 +36,10 @@ class Profile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        try:
+            welcomEmail(instance.email,{'username':instance.username})
+        except Exception:
+            pass
     
 
 

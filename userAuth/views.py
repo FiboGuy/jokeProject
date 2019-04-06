@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .utils import validPassword, validUsername, validEmail, deleteUserImages
-from emailService.emails.welcomeEmail import welcomEmail
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -40,11 +39,6 @@ class RegisterView(ListView):
             return JsonResponse({'data':'email already registered'}, status=400)
     
         if(validUsername(username) and validPassword(password) and password==password2 and validEmail(email)):
-            try:
-                welcomEmail(email,{'username':username})
-            except Exception:
-                pass
-
             user = User.objects.create_user(username=username, password=password, email=email)
         else:
             return JsonResponse({'data':'invalid credentials'}, status=400)
