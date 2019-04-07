@@ -3,8 +3,8 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from jokes.utils import validateRating
 from jokes.models.JokeModel import Joke
+from jokes.utils import validateRating
 from jokes.models.RatingModel import Rating
 
 decorators=[csrf_exempt,login_required]

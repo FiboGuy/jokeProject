@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'userAuth',
     'followers',
     'emailService',
-    'jokes'
+    'jokes',
+    'jokes.comments'
 ]
 
 MIDDLEWARE = [

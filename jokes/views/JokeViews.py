@@ -16,6 +16,7 @@ class JokeCreateView(ListView):
             text = request.POST['text']
         except Exception:
             raise Exception('No jokes submitted')
+            
         joke = Joke(user=user, text=text)
         joke.save()
         return JsonResponse({'data':{
