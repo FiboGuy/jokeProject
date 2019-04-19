@@ -82,7 +82,15 @@ class LoginView(ListView):
             {'data':
                 {
                     'data':'login succesful',
-                    'session':session.session_key
+                    'session':session.session_key,
+                    'user': {
+                        'id':user.id,
+                        'username':user.username,
+                        'email':user.email,
+                        'first_name':user.first_name,
+                        'last_name':user.last_name,
+                        'image':user.profile.image.url
+                    }
                 }
             }, status=200)
 
@@ -185,7 +193,7 @@ class UploadImage(ListView):
             return HttpResponse('No image', status=400)
         
         request_user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
-        
+
         deleteUserImages(request_user.username)
 
         profile = Profile.objects.get(user=request_user)
