@@ -3,11 +3,12 @@ from django.views.generic import ListView
 from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
+from userAuth.utils.decorators.login_required import login_required
+from userAuth.utils.utils import getUserFromSession
 from django.contrib.auth.models import User
 from .models import Followers
 
-# decorators=[login_required, csrf_exempt]
+
 @method_decorator(csrf_exempt, name='dispatch')
 class followView(ListView):
     def get(self,request, id):
@@ -15,21 +16,21 @@ class followView(ListView):
         data = [i.follower.username for i in users]
         return JsonResponse({'data':data})
 
-    @method_decorator(login_required,name='dispatch')
+    @login_required
     def post(self,request):
-        user = request.user
+        user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
         try:
             followedUsername = request.POST['user']
         except Exception:
-            raise Exception('Not user provided')
+            return HttpResponse('No user provided', status=400)
         
         try:
-            followedUser = User.objects.get(username=followedUsername)
+            followedUser = User.objects.get(username = followedUsername)
         except Exception:
-            raise Exception('Trying to follow a not existing user')
+            return HttpResponse('Trying to follow a not existing user', status = 400)
 
         if user==followedUser: 
-            raise Exception('You can\'t follow yourself')
+            return HttpResponse('You can\'t follow yourself', status = 400)
 
         check = Followers.objects.filter(follower=user.id, followed=followedUser.id)
 
@@ -40,9 +41,9 @@ class followView(ListView):
         else:
             return JsonResponse({'data':'Already following'}, status=400)
     
-    @method_decorator(login_required,name='dispatch')
+    @login_required
     def delete(self,request,id):
-        user = request.user
+        user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
         check = Followers.objects.filter(follower=user.id, followed=id)
 
         if len(check)==0:

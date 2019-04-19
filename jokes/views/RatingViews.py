@@ -2,33 +2,34 @@ from django.views.generic import ListView
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from userAuth.utils.decorators.login_required import login_required
+from userAuth.utils.utils import getUserFromSession
 from jokes.models.JokeModel import Joke
 from jokes.utils import validateRating
 from jokes.models.RatingModel import Rating
 
-decorators=[csrf_exempt,login_required]
 
-@method_decorator(decorators, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class RateJokeView(ListView):
+    @login_required
     def post(self,request):
-        user = request.user
+        user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
         try:
             rate = float(request.POST['rate'])
             jokeId = request.POST['jokeId']
         except Exception:
-            raise Exception('Invalid post information')
+            return HttpResponse('Invalid post information', status=400)
 
         try:
             joke = Joke.objects.get(id=jokeId)
         except Exception:
-            raise Exception('No joke found')
+            return HttpResponse('No joke found', status=400)
         
         if not validateRating(int(rate)):
-            raise Exception('Invalid rate')
+            return HttpResponse('Invalid rate', status=400)
 
         if joke.user == user:
-            raise Exception('You can\'t rate your jokes')
+            return HttpResponse('You can\'t rate your jokes', status=400)
 
         rating = Rating.objects.filter(user=user,joke=joke)
 

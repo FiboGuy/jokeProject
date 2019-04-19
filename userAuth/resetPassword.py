@@ -7,7 +7,7 @@ from django.contrib.sessions.models import Session
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
-from .utils import validPassword
+from .utils.utils import validPassword
 from django.contrib.auth.models import User
 from django.urls import reverse
 from emailService.emails.resetPassword import urlResetPassword
@@ -19,7 +19,7 @@ def generateResetUrl(request):
     email = request.POST['email']
     user = User.objects.filter(email=email)
     if len(user)==0:
-        raise Exception('Email not found')
+        return HttpResponse('Email not found', status=400)
 
     s = SessionStore()
     s['email'] = email
@@ -30,7 +30,7 @@ def generateResetUrl(request):
     url = request.build_absolute_uri(reverse(resetUrl, args=(s.session_key,)))
     urlResetPassword(email,{'url':url})
 
-    return HttpResponse("ok")
+    return HttpResponse("ok", status = 200)
 
 @require_http_methods(['GET'])
 def resetUrl(request, key):
@@ -42,7 +42,7 @@ def resetUrl(request, key):
 
     if timeExpired(data):
         session.delete()
-        raise Http404('Session expired')
+        raise Http404('Session expired or doesn\'t exists')
         
     return JsonResponse({'data':{
         'email':data['email'],
@@ -69,17 +69,17 @@ def resetPassword(request):
     try:
         user = User.objects.get(email=data['email'])
     except Exception:
-        raise Exception('No user found with that email')
+        return HttpResponse('No user found with that email', status=400)
     
     if validPassword(password1) and password1==password2:
         user.password = make_password(password1)
         user.save()
     else:
-        raise Exception('Invalid credentials')
+        return HttpResponse('Invalid credentials', status=400)
     
     session.delete()
     
-    return HttpResponse('Password changed correctly')
+    return HttpResponse('Password changed correctly', status = 200)
     
 def timeExpired(data):
     expired_time = data['time'] + data['_session_expiry']

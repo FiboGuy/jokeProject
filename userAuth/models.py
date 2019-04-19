@@ -20,8 +20,9 @@ def validate_image(value):
 
 
 class Profile(models.Model):
-    user=models.OneToOneField(User, on_delete=models.CASCADE)
-    image=models.ImageField(upload_to=user_directory_path, validators=[validate_image], default='default/profile.png')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=user_directory_path, validators=[validate_image], default='default/profile.png')
+    session = models.CharField(max_length=100, null = True)
     updated_at = models.DateTimeField(auto_now=True)
     # active boolean field for email activation account.
 

@@ -2,16 +2,18 @@ from django.views.generic import ListView
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from userAuth.utils.decorators.login_required import login_required
+from userAuth.utils.utils import getUserFromSession
 from jokes.models.JokeModel import Joke
 from jokes.models.FavouriteJokeModel import FavouriteJoke
 
-decorators=[csrf_exempt,login_required]
 
-@method_decorator(decorators, name='dispatch')
+
+@method_decorator(csrf_exempt, name='dispatch')
 class FavouriteJokeView(ListView):
+    @login_required
     def get(self,request):
-        user = request.user
+        user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
         jokes = FavouriteJoke.objects.filter(user=user)
 
         return JsonResponse({
@@ -25,17 +27,18 @@ class FavouriteJokeView(ListView):
             ]
         },status=200)
 
+    @login_required
     def post(self,request):
-        user = request.user
+        user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
         try:
             joke = request.POST['joke']
         except Exception:
-            raise Exception('No joke submitted')
+            return HttpResponse('No joke submitted', status=400)
 
         try:
             joke = Joke.objects.get(id=joke)
         except Exception:
-            raise Exception('Joke doesn\'t exists')
+            return HttpResponse('Joke doesn\'t exists', status=400)
 
         favourite = FavouriteJoke.objects.filter(user=user,joke=joke)
 
@@ -47,9 +50,10 @@ class FavouriteJokeView(ListView):
             data = {'data':'You already liked it'}
         
         return JsonResponse(data,status=200)
-    
+        
+    @login_required
     def delete(self,request, id):
-        user = request.user
+        user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
 
         favourite = FavouriteJoke.objects.filter(user=user,joke=id)
         if len(favourite)==0:
