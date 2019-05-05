@@ -25,7 +25,7 @@ class RegisterView(ListView):
             email = request.POST['email']
         except Exception:
             return HttpResponse('Invalid credentials', status=400)
-    
+            
         try:
             user = User.objects.get(username=username)
         except Exception:
@@ -160,7 +160,7 @@ class EditProfileView(ListView):
         print(request_user.username)
         return JsonResponse({"data":"updated succesfully"})
 
-@method_decorator(decorators, name="dispatch")
+@method_decorator(csrf_exempt, name="dispatch")
 class EditPassword(ListView):
     @login_required
     def post(self, request):
@@ -183,7 +183,7 @@ class EditPassword(ListView):
         
         return JsonResponse({'data':'ok'},status=200)
     
-@method_decorator(decorators, name="dispatch")
+@method_decorator(csrf_exempt, name="dispatch")
 class UploadImage(ListView):
     @login_required
     def post(self, request):
@@ -193,7 +193,7 @@ class UploadImage(ListView):
             return HttpResponse('No image', status=400)
         
         request_user = getUserFromSession(request.META['HTTP_AUTHORIZATION'])
-
+  
         deleteUserImages(request_user.username)
 
         profile = Profile.objects.get(user=request_user)

@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .JokeModel import Joke
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
-from jokes import utils
+from . import utils
+from jokes.models.JokeModel import Joke
 
 def validatePunutations(value):
     if value>10 or value<0 :
@@ -23,7 +23,7 @@ class Rating(models.Model):
     class Meta:
         db_table = 'ratings'
 
-@receiver(post_save, sender=Rating)
+@receiver(post_save, sender = Rating)
 def save_rate(sender, instance, created, **kwargs):
     rate = utils.calculateTotalRate(instance.joke.id)
     instance.joke.rate = rate

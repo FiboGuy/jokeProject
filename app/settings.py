@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'emailService',
     'jokes',
     'jokes.comments',
+    'rating'
 ]
 
 MIDDLEWARE = [

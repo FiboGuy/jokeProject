@@ -22,7 +22,7 @@ def validEmail(email):
 
 def deleteUserImages(user):
     user='user_'+user
-    dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),'../media')
+    dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),'../../media')
     users=os.listdir(dir)
     if user not in users: return
     userdir = os.path.join(dir,users[users.index(user)])
@@ -36,6 +36,7 @@ def getUserFromSession(key, refresh=False):
         session.save()
     data = session.get_decoded()
     user = User.objects.get(id = data['user_id'])
+    print(data)
     return user
 
 def login(user):

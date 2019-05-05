@@ -5,8 +5,8 @@ from django.utils.decorators import method_decorator
 from userAuth.utils.decorators.login_required import login_required
 from userAuth.utils.utils import getUserFromSession
 from jokes.models.JokeModel import Joke
-from jokes.utils import validateRating
-from jokes.models.RatingModel import Rating
+from .utils import validateRating
+from .models import Rating
 
 
 @method_decorator(csrf_exempt, name='dispatch')

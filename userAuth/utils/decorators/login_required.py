@@ -5,7 +5,6 @@ from datetime import datetime
 
 def login_required(function):
     def wrapper(self, request):
-       
         try:
             authorization = request.META['HTTP_AUTHORIZATION']
             session = Session.objects.get(pk=authorization)

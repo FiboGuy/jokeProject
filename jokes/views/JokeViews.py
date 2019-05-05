@@ -30,7 +30,6 @@ class JokeCreateView(ListView):
     
 @method_decorator(csrf_exempt, name='dispatch')
 class JokeView(ListView):
-    @login_required
     def get(self,request,id):
         try:
             joke = Joke.objects.get(id=id)

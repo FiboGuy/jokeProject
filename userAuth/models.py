@@ -33,14 +33,14 @@ class Profile(models.Model):
         db_table='profile'
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-        try:
-            welcomEmail(instance.email,{'username':instance.username})
-        except Exception:
-            pass
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+#         try:
+#             welcomEmail(instance.email,{'username':instance.username})
+#         except Exception:
+#             pass
     
 
 

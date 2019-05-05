@@ -22,7 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('userAuth.urls')),
     path('followers/', include('followers.urls')),
-    path('jokes/', include('jokes.urls'))
+    path('jokes/', include('jokes.urls')),
+    path('ratings/', include('rating.urls'))
 ]
 
 if settings.DEBUG:
